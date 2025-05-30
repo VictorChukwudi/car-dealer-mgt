@@ -30,5 +30,13 @@ export const purchaseSchema = new Schema<IPurchaseDocument>({
 }, { timestamps: true }
 )
 
+purchaseSchema.set("toJSON", {
+    transform: (_doc, ret) => {
+        delete ret.createdAt;
+        delete ret.__v;
+        return ret;
+    },
+});
+
 const Purchase: Model<IPurchaseDocument> = mongoose.model<IPurchaseDocument>("Purchase", purchaseSchema)
 export default Purchase;

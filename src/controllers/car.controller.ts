@@ -4,7 +4,7 @@ import { CategoryService } from "../services/category.service"
 
 export class CarController {
 
-    static async createCar(req: Request, res: Response) {
+    static async createCar(req: Request, res: Response): Promise<any> {
         try {
             const { brand, carModel, year, price, category, description, quantity, availability } = req.body
             const categoryName = category.toLowerCase()
@@ -66,7 +66,7 @@ export class CarController {
         }
     }
 
-    static async getCar(req: Request, res: Response) {
+    static async getCar(req: Request, res: Response): Promise<any> {
         try {
             const { id } = req.params
             const car = await CarService.findCarById(id)
@@ -89,7 +89,7 @@ export class CarController {
         }
     }
 
-    static async updateCar(req: Request, res: Response) {
+    static async updateCar(req: Request, res: Response): Promise<any> {
         try {
             const { id } = req.params
             const { brand, carModel, year, price, category, description, quantity, availability } = req.body
@@ -136,7 +136,7 @@ export class CarController {
         }
     }
 
-    static async deleteCar(req: Request, res: Response) {
+    static async deleteCar(req: Request, res: Response): Promise<any> {
         try {
             const { id } = req.params
             const car = await CarService.deleteCar(id)

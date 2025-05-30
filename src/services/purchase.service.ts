@@ -25,7 +25,7 @@ export class PurchaseService {
         return purchases
     }
 
-    static async findAllCustomerPurchases(customer: string) {
+    static async findAllCustomerPurchases(customer: string | any) {
         const purchases = await Purchase.find({ customer }).populate('car')
         return purchases
     }

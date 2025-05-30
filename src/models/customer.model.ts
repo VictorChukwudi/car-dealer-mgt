@@ -41,6 +41,10 @@ customerSchema.pre<ICustomerDocument>("save", async function (next) {
 customerSchema.set("toJSON", {
     transform: (_doc, ret) => {
         delete ret.password;
+        delete ret.hasRole;
+        delete ret.createdAt;
+        delete ret.updatedAt;
+        delete ret.__v;
         return ret;
     },
 });

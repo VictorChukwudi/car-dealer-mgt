@@ -44,6 +44,10 @@ managerSchema.pre<IManagerDocument>("save", async function (next) {
 managerSchema.set("toJSON", {
     transform: (_doc, ret) => {
         delete ret.password;
+        delete ret.hasRole;
+        delete ret.createdAt;
+        delete ret.updatedAt;
+        delete ret.__v;
         return ret;
     },
 });

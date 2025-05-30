@@ -16,5 +16,13 @@ const categorySchema = new Schema<ICategoryDocument>({
     },
 });
 
+categorySchema.set("toJSON", {
+    transform: (_doc, ret) => {
+        delete ret.createdAt;
+        delete ret.__v;
+        return ret;
+    },
+});
+
 const Category: Model<ICategoryDocument> = mongoose.model<ICategoryDocument>("Category", categorySchema);
 export default Category;

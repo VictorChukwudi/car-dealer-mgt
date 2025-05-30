@@ -5,7 +5,7 @@ import { CarService } from "../services/car.service"
 import mongoose from "mongoose"
 
 export class CustomerController {
-    static async fetchCustomer(req: Request, res: Response) {
+    static async fetchCustomer(req: Request, res: Response): Promise<any> {
         try {
             const id = req.user && req.user.id
             const customer = await CustomerService.findCustomerById(id)
@@ -22,7 +22,7 @@ export class CustomerController {
         }
     }
 
-    static async fetchCustomerPurchases(req: Request, res: Response) {
+    static async fetchCustomerPurchases(req: Request, res: Response): Promise<any> {
         try {
             const id = req.user && req.user.id
             const purchases = await PurchaseService.findAllCustomerPurchases(id)
@@ -39,7 +39,7 @@ export class CustomerController {
         }
     }
 
-    static async updateCustomerDetails(req: Request, res: Response) {
+    static async updateCustomerDetails(req: Request, res: Response): Promise<any> {
         try {
             const id = req.user && req.user.id
             const { name, email, password } = req.body
@@ -64,7 +64,7 @@ export class CustomerController {
         }
     }
 
-    static async makePurchase(req: Request, res: Response) {
+    static async makePurchase(req: Request, res: Response): Promise<any> {
         const session = await mongoose.startSession();
         session.startTransaction();
         try {
