@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document, Model, Types } from "mongoose";
 import { ICar } from "./interfaces/car.interface";
 
-// Mongoose Document interface
 export interface ICarDocument extends ICar, Document { }
 
 const carSchema: Schema<ICarDocument> = new Schema(
@@ -30,6 +29,10 @@ const carSchema: Schema<ICarDocument> = new Schema(
             type: String,
             required: true,
         },
+        quantity: {
+            type: Number,
+            required: true
+        },
         availability: {
             type: Boolean,
             default: true,
@@ -38,7 +41,32 @@ const carSchema: Schema<ICarDocument> = new Schema(
     { timestamps: true }
 );
 
-// Correct generic: use ICarDocument for the model
+
+//This middleware (hook) ensure that when the car quantity is zero, availability becomes false on updates
+carSchema.pre("findOneAndUpdate", function (next) {
+    const update = this.getUpdate();
+
+    //Check to ensure that the update is actually an object and not a pipeline to access the $set
+    //Skips to next is it's a pipeline
+    if (Array.isArray(update)) {
+        return next();
+    }
+    const quantity = update?.$set?.quantity ?? update?.quantity;
+
+    if (typeof quantity === "number") {
+        this.setUpdate({
+            ...update,
+            $set: {
+                ...update?.$set,
+                availability: quantity > 0,
+            },
+        });
+    }
+
+    next();
+});
+
+
 const Car: Model<ICarDocument> = mongoose.model<ICarDocument>("Car", carSchema);
 
 export default Car;

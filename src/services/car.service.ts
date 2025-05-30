@@ -1,17 +1,18 @@
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import Car from "../models/car.model";
 import { ICar } from "../models/interfaces/car.interface";
 
 
 export class CarService {
-    static async createCar({ brand, carModel, year, price, category, description, availability }: ICar) {
-        const newCar = new Car({
+    static async createCar({ brand, carModel, year, price, category, description, quantity, availability }: ICar) {
+        const newCar = await new Car({
             brand,
             carModel,
             year,
             price,
             category,
             description,
+            quantity,
             availability
         }).save()
 
@@ -20,6 +21,10 @@ export class CarService {
 
     static async findCarById(id: any) {
         const car = await Car.findById(id)
+        return car
+    }
+    static async updateCarById(id: any, data: Partial<ICar>, session?: mongoose.ClientSession) {
+        const car = await Car.findByIdAndUpdate(id, data, { new: true, session }).populate("category");
         return car
     }
     static async findCarsByPriceRange(minPrice: number, maxPrice: number) {
@@ -42,8 +47,34 @@ export class CarService {
         return car
     }
 
-    static async deleteCarsByCategory(categoryId: string | Types.ObjectId) {
-        const cars = await Car.deleteMany({ category: categoryId });
+    static async deleteCarsByCategory(categoryId: string | any, session?: mongoose.ClientSession) {
+        const cars = await Car.deleteMany({ category: categoryId }, { session });
         return cars;
+    }
+
+    static async findCarsByFilters(filters: {
+        brand?: string | any,
+        carModel?: string | any,
+        category?: string | any,
+        year?: number | any,
+        minPrice?: number | any,
+        maxPrice?: number | any,
+        availability?: boolean | any
+    }) {
+        const query: any = {};
+        if (filters.brand) query.brand = filters.brand
+        if (filters.carModel) query.carModel = filters.carModel
+        if (filters.category) query.category = new Types.ObjectId(filters.category)
+        if (filters.year) query.year = filters.year
+        if (filters.availability !== undefined) query.availability = filters.availability
+
+        if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+            query.price = {};
+            if (filters.minPrice !== undefined) query.price.$gte = filters.minPrice;
+            if (filters.maxPrice !== undefined) query.price.$lte = filters.maxPrice;
+        }
+
+        const cars = await Car.find(query).populate('category')
+        return cars
     }
 }

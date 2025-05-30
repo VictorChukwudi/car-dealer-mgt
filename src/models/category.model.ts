@@ -7,6 +7,8 @@ const categorySchema = new Schema<ICategoryDocument>({
     name: {
         type: String,
         required: true,
+        unique: true,
+        lowercase: true,
     },
     description: {
         type: String,

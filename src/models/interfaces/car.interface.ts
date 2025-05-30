@@ -5,7 +5,8 @@ export interface ICar {
     carModel: string;
     year: number;
     price: number;
-    category: any;
+    category: string | any;
     description: string;
+    quantity: number;
     availability?: boolean;
 }

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken"
+import jwt, { JwtPayload } from "jsonwebtoken"
 import dotenv from "dotenv"
 
 dotenv.config()
@@ -17,7 +17,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
                     message: "Session Expired. Signin again.",
                 });
             } else {
-                req["user"] = user
+                req.user = user as JwtPayload
                 next();
             }
         });

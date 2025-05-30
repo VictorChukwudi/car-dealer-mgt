@@ -22,4 +22,8 @@ export class CustomerService {
         const customer = await Customer.findOne({ email })
         return customer
     }
+    static async updateCustomer(id: any, { name, email, password }: Partial<ICustomer>) {
+        const customer = await Customer.findByIdAndUpdate(id, { name, email, password }, { new: true })
+        return customer
+    }
 }
