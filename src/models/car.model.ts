@@ -8,10 +8,12 @@ const carSchema: Schema<ICarDocument> = new Schema(
         brand: {
             type: String,
             required: true,
+            lowercase: true,
         },
         carModel: {
             type: String,
             required: true,
+            lowercase: true
         },
         year: {
             type: Number,

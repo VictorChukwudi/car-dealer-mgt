@@ -16,8 +16,8 @@ export class CarController {
                 })
             }
             const newCar = await CarService.createCar({
-                brand,
-                carModel,
+                brand: brand.toLowerCase(),
+                carModel: carModel.toLowerCase(),
                 year,
                 price,
                 category: findCategory._id,
@@ -44,9 +44,10 @@ export class CarController {
 
             const categoryName = category && category.toString().toLowerCase()
             const findCategory = categoryName && await CategoryService.findCategoryByName(categoryName)
+
             const cars = await CarService.findCarsByFilters({
-                brand,
-                carModel: model,
+                brand: brand?.toString().toLowerCase(),
+                carModel: model?.toString().toLowerCase(),
                 category: findCategory ? findCategory._id : undefined,
                 year,
                 availability,
