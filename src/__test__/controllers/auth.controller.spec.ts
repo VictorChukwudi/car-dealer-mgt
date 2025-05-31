@@ -2,7 +2,6 @@
 import { Request, Response } from "express";
 import { AuthController } from "../../controllers/auth.controller";
 import { CustomerService } from "../../services/customer.service";
-import { ManagerService } from "../../services/manager.service";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
