@@ -4,14 +4,14 @@ import { CarService } from "../services/car.service"
 import mongoose from "mongoose"
 
 export class CategoryController {
-    static async createCategory(req: Request, res: Response) {
+    static async createCategory(req: Request, res: Response): Promise<any> {
         try {
             const { name, description } = req.body
             const categoryName = name.toString().toLowerCase()
             const category = await CategoryService.findCategoryByName(categoryName)
 
             if (category) {
-                res.status(400).json({
+                return res.status(400).json({
                     status: "error",
                     message: "Category already exists"
                 })

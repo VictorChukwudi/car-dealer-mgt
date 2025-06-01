@@ -81,14 +81,22 @@ export class CustomerController {
                 })
             }
 
-            if (!findCar.availability || findCar.quantity < quantity) {
+            if (!findCar.availability) {
                 await session.abortTransaction();
                 session.endSession();
                 return res.status(400).json({
                     status: "error",
-                    message: "Car not available or insufficient quantity"
+                    message: "Car not available"
                 })
 
+            }
+            if (findCar.quantity < quantity) {
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(400).json({
+                    status: "error",
+                    message: "Insufficient quantity"
+                })
             }
 
             //Create purchase record

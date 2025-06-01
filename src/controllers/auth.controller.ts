@@ -18,7 +18,7 @@ export class AuthController {
             if (customer) {
                 return res.status(400).json({
                     status: "error",
-                    message: "Customer already exists"
+                    message: "Customer email already exists"
                 })
             }
 
@@ -83,7 +83,7 @@ export class AuthController {
             if (manager) {
                 return res.status(400).json({
                     status: "error",
-                    message: "Manager already exists"
+                    message: "Manager email already exists"
                 })
             }
 

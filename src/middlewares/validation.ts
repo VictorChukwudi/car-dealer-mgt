@@ -22,8 +22,11 @@ const validate = (schema: {
                 return;
             }
 
-            // copies validated values into the existing object
-            Object.assign((req as any)[source], validatedValue);
+            // Mutate instead of overwrite
+            const target = (req as any)[source];
+            if (typeof target === "object" && target !== null) {
+                Object.assign(target, validatedValue);
+            }
         }
 
         next();

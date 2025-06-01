@@ -9,5 +9,5 @@ const router = express.Router()
 router.get("/profile", CustomerController.fetchCustomer)
 router.patch("/profile", [validate({ body: updateCustomerSchema })], CustomerController.updateCustomerDetails)
 router.get("/purchases", CustomerController.fetchCustomerPurchases)
-router.get("/purchase-car", [validate({ body: makePurchaseSchema })], CustomerController.makePurchase)
+router.post("/purchase-car", [validate({ body: makePurchaseSchema })], CustomerController.makePurchase)
 export default router
