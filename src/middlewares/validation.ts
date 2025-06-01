@@ -22,7 +22,7 @@ const validate = (schema: {
                 return;
             }
 
-            // Mutate instead of overwrite
+
             const target = (req as any)[source];
             if (typeof target === "object" && target !== null) {
                 Object.assign(target, validatedValue);
