@@ -52,7 +52,7 @@ describe("CustomerController", () => {
     });
 
     describe("fetchCustomerPurchases", () => {
-        it("should return a customer purchases", async () => {
+        it("should return customer purchases", async () => {
             req.user = { id: "cust123", email: "cust@email.com" };
             const mockPurchases = [{ car: "car123", quantity: 2 }];
             (PurchaseService.findAllCustomerPurchases as jest.Mock).mockResolvedValue(mockPurchases);
@@ -103,18 +103,23 @@ describe("CustomerController", () => {
     });
 
     describe("makePurchase", () => {
-        let findCarMock: any;
-        let createPurchaseMock: any;
-
         beforeEach(() => {
             req.user = { id: "cust123", email: "cust@email.com" };
             req.body = { carId: "car123", quantity: 2 };
 
-            findCarMock = { _id: "car123", price: 10000, quantity: 5, availability: true };
-            createPurchaseMock = { id: "p1", car: "car123", quantity: 2 };
+            (CarService.findCarById as jest.Mock).mockResolvedValue({
+                _id: "car123",
+                price: 10000,
+                quantity: 5,
+                availability: true
+            });
 
-            (CarService.findCarById as jest.Mock).mockResolvedValue(findCarMock);
-            (PurchaseService.createPurchase as jest.Mock).mockResolvedValue(createPurchaseMock);
+            (PurchaseService.createPurchase as jest.Mock).mockResolvedValue({
+                id: "p1",
+                car: "car123",
+                quantity: 2
+            });
+
             (CarService.updateCarById as jest.Mock).mockResolvedValue({});
 
             jest.spyOn(mongoose, "startSession").mockResolvedValue(mockSession as any);
@@ -130,18 +135,42 @@ describe("CustomerController", () => {
                 status: "error",
                 message: "Car not found",
             });
+            expect(mockSession.abortTransaction).toHaveBeenCalled();
+            expect(mockSession.endSession).toHaveBeenCalled();
         });
 
-        it("should return 400 if insufficient quantity or car is not available", async () => {
-            findCarMock.quantity = 1;
+        it("should return 400 if car is not available", async () => {
+            (CarService.findCarById as jest.Mock).mockResolvedValueOnce({
+                availability: false,
+                quantity: 10
+            });
 
             await CustomerController.makePurchase(req as Request, res as Response);
 
             expect(statusMock).toHaveBeenCalledWith(400);
             expect(jsonMock).toHaveBeenCalledWith({
                 status: "error",
-                message: "Car not available or insufficient quantity",
+                message: "Car not available",
             });
+            expect(mockSession.abortTransaction).toHaveBeenCalled();
+            expect(mockSession.endSession).toHaveBeenCalled();
+        });
+
+        it("should return 400 if insufficient quantity", async () => {
+            (CarService.findCarById as jest.Mock).mockResolvedValueOnce({
+                availability: true,
+                quantity: 1
+            });
+
+            await CustomerController.makePurchase(req as Request, res as Response);
+
+            expect(statusMock).toHaveBeenCalledWith(400);
+            expect(jsonMock).toHaveBeenCalledWith({
+                status: "error",
+                message: "Insufficient quantity",
+            });
+            expect(mockSession.abortTransaction).toHaveBeenCalled();
+            expect(mockSession.endSession).toHaveBeenCalled();
         });
 
         it("should process a valid purchase", async () => {
@@ -156,11 +185,17 @@ describe("CustomerController", () => {
 
             expect(CarService.updateCarById).toHaveBeenCalledWith("car123", { quantity: 3 }, mockSession);
             expect(mockSession.commitTransaction).toHaveBeenCalled();
+            expect(mockSession.endSession).toHaveBeenCalled();
+
             expect(statusMock).toHaveBeenCalledWith(201);
             expect(jsonMock).toHaveBeenCalledWith({
                 status: "success",
                 message: "Purchase made successfully",
-                data: createPurchaseMock,
+                data: {
+                    id: "p1",
+                    car: "car123",
+                    quantity: 2,
+                },
             });
         });
 

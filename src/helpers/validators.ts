@@ -90,5 +90,7 @@ export const getCarsSchema = Joi.object({
     availability: Joi.boolean(),
     category: Joi.string().trim(),
     minPrice: Joi.number().min(0),
-    maxPrice: Joi.number().min(0)
+    maxPrice: Joi.number().min(0),
+    page: Joi.number().integer().min(1),
+    limit: Joi.number().integer().min(10)
 })

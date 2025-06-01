@@ -60,6 +60,8 @@ export class CarService {
         minPrice?: number | any,
         maxPrice?: number | any,
         availability?: boolean | any
+        page?: number,
+        limit?: number
     }) {
         const query: any = {};
         if (filters.brand) query.brand = filters.brand
@@ -74,7 +76,23 @@ export class CarService {
             if (filters.maxPrice !== undefined) query.price.$lte = filters.maxPrice;
         }
 
-        const cars = await Car.find(query).populate('category')
-        return cars
+        const page = filters.page && filters.page > 0 ? filters.page : 1;
+        const limit = filters.limit && filters.limit > 0 ? filters.limit : 10;
+        const skip = (page - 1) * limit;
+
+        const [cars, total] = await Promise.all([
+            Car.find(query)
+                .populate('category')
+                .skip(skip)
+                .limit(limit).exec(),
+            Car.countDocuments(query)
+        ]);
+        return {
+            cars,
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit)
+        };
     }
 }

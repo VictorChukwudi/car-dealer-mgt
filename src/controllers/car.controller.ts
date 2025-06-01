@@ -40,7 +40,7 @@ export class CarController {
 
     static async getCars(req: Request, res: Response) {
         try {
-            const { brand, model, year, availability, category, minPrice, maxPrice } = req.query
+            const { brand, model, year, availability, category, minPrice, maxPrice, page, limit } = req.query
 
             const categoryName = category && category.toString().toLowerCase()
             const findCategory = categoryName && await CategoryService.findCategoryByName(categoryName)
@@ -52,7 +52,9 @@ export class CarController {
                 year,
                 availability,
                 minPrice,
-                maxPrice
+                maxPrice,
+                page: page ? parseInt(page.toString()) : undefined,
+                limit: limit ? parseInt(limit.toString()) : undefined
             })
             res.status(200).json({
                 status: "success",

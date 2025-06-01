@@ -53,7 +53,7 @@ describe("AuthController", () => {
             expect(statusMock).toHaveBeenCalledWith(400);
             expect(jsonMock).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    message: "Customer already exists",
+                    message: "Customer email already exists",
                 })
             );
         });

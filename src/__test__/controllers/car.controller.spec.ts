@@ -71,23 +71,44 @@ describe("CarController", () => {
     });
 
     describe("getCars", () => {
-        it("should return filtered cars", async () => {
-            req.query = { brand: "toyota", category: "suv" };
+        it("should return filtered and paginated cars", async () => {
+            req.query = {
+                brand: "toyota",
+                category: "suv",
+                page: "1",
+                limit: "2"
+            };
+
+            const mockPaginatedResult = {
+                cars: [mockCar],
+                total: 1,
+                page: 1,
+                limit: 2,
+                totalPages: 1
+            };
 
             (CategoryService.findCategoryByName as jest.Mock).mockResolvedValue(mockCategory);
-            (CarService.findCarsByFilters as jest.Mock).mockResolvedValue([mockCar]);
+            (CarService.findCarsByFilters as jest.Mock).mockResolvedValue(mockPaginatedResult);
 
             await CarController.getCars(req as Request, res as Response);
 
-            expect(CarService.findCarsByFilters).toHaveBeenCalled();
+            expect(CategoryService.findCategoryByName).toHaveBeenCalledWith("suv");
+            expect(CarService.findCarsByFilters).toHaveBeenCalledWith(expect.objectContaining({
+                brand: "toyota",
+                category: mockCategory._id,
+                page: 1,
+                limit: 2
+            }));
+
             expect(statusMock).toHaveBeenCalledWith(200);
             expect(jsonMock).toHaveBeenCalledWith({
                 status: "success",
                 message: "Cars fetched successfully",
-                data: [mockCar]
+                data: mockPaginatedResult
             });
         });
     });
+
 
     describe("getCar", () => {
         it("should return a car by ID", async () => {
