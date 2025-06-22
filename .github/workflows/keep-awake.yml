@@ -2,7 +2,7 @@ name: Keep Server Awake
 
 on:
   schedule:
-    - cron: "*/20 * * * *" # Run every 20 minutes
+    - cron: "0 */2 * * *" # Run every 2 hours
 
 jobs:
   keep-alive:
